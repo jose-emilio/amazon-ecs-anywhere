@@ -1,0 +1,45 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Plantilla que un cluster, roles de tareas necesarios y una definición de tarea de ejemplo que utiliza la infraestructura on-premises
+Resources:
+  RolVMOnPremises:
+    Type: AWS::IAM::Role
+    Properties: 
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          -
+            Effect: "Allow"
+            Principal:
+              Service:
+                - "ssm.amazonaws.com"
+            Action:
+              - "sts:AssumeRole"
+      Path: "/"
+      ManagedPolicyArns:
+        - "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+        - "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role"
+  Tarea:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      ContainerDefinitions:
+        - Image: "httpd:latest"
+          Name: "httpd"
+          Memory: 256
+          Cpu: 256
+          Essential: true
+          PortMappings:
+            - Protocol: "tcp"
+              ContainerPort: 80
+              HostPort: 0
+      NetworkMode: "bridge"
+      Family: "test-task"
+  Cluster:
+    Type: AWS::ECS::Cluster
+Outputs:
+  Rol:
+    Description: Rol de las instancias on-premises
+    Value: !Ref RolVMOnPremises
+  Cluster:
+    Description: Cluster ECS-Anywhere
+    Value: !Ref Cluster
+
