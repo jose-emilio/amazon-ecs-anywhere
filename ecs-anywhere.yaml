@@ -22,7 +22,7 @@ Resources:
     Type: AWS::ECS::TaskDefinition
     Properties:
       ContainerDefinitions:
-        - Image: "httpd:latest"
+        - Image: "jovesau/test-docker-image-amd64:latest"
           Name: "httpd"
           Memory: 256
           Cpu: 256
